@@ -1,0 +1,6 @@
+{
+  "TwilioAccountSid": "some_account_sid",
+  "TwilioAuthToken": "some_auth_token",
+  "TwilioFromPhone": "some_phone",
+  "Notifiee": "some_phone_number"
+}
