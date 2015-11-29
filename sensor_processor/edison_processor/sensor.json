@@ -1,0 +1,6 @@
+{
+  "Sensors": {
+    "2": "touch"
+  },
+  "NotifierUrl": "10.0.0.4:8888"
+}
