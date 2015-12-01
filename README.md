@@ -10,6 +10,10 @@ The sensor processor which would run on something like a Raspberry Pi or Intel E
  and send it to the notification processor over UDP. The notification processor could either run on a local machine or 
  on the cloud, say on a platform like [Cloud Foundry](http://docs.cloudfoundry.org/concepts/).
  
+### Architecture
+
+![architecture](docs/architecture.png)
+
 ### Tests
 ```
 ginkgo -r
