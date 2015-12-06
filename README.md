@@ -18,3 +18,7 @@ The sensor processor which would run on something like a Raspberry Pi or Intel E
 ```
 ginkgo -r
 ```
+
+### Wiki
+
+The [wiki](https://github.com/wfernandes/IoT/wiki) contains more information regarding process, troubleshooting and setup I did so that I could reference my silliness in the future.
