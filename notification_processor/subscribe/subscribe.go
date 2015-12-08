@@ -5,7 +5,7 @@ import (
 
 	"sync"
 
-	"github.com/wfernandes/homesec/notification_processor/mqtt"
+	"github.com/wfernandes/homesec/mqtt"
 )
 
 const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"
