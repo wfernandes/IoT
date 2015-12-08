@@ -2,6 +2,10 @@ package notifiers
 
 import twilio "github.com/carlosdp/twiliogo"
 
+type Notifier interface {
+	Notify(string) error
+}
+
 type Twilio struct {
 	client *twilio.TwilioClient
 	from   string

@@ -13,10 +13,8 @@ type Config struct {
 
 	To   string
 	Port uint
-}
 
-func DefaultConfig() (*Config, error) {
-	return Configuration("../homesec.json")
+	BrokerUrl string
 }
 
 func FromBytes(data []byte) (*Config, error) {
@@ -55,6 +53,10 @@ func (c *Config) validate() error {
 
 	if c.TwilioFromPhone == "" {
 		return fmt.Errorf("Twilio From Phone is required")
+	}
+
+	if c.BrokerUrl == "" {
+		return fmt.Errorf("MQTT broker url is required")
 	}
 	return nil
 }

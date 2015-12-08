@@ -9,14 +9,6 @@ import (
 
 var _ = Describe("Config", func() {
 
-	Context("defaults", func() {
-		It("reads from the default configuration", func() {
-			config, err := config.DefaultConfig()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(config).ToNot(BeNil())
-		})
-	})
-
 	Context("parsing the json", func() {
 
 		It("returns error for missing twilio account number", func() {
@@ -29,6 +21,7 @@ var _ = Describe("Config", func() {
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(Equal("Twilio Account SID is required"))
 		})
+
 		It("returns error for missing twilio auth token", func() {
 
 			var jsonStr []byte = []byte(`{
@@ -50,6 +43,19 @@ var _ = Describe("Config", func() {
 			Expect(err.Error()).To(Equal("Twilio From Phone is required"))
 		})
 
+		It("returns error for missing mqtt broker url", func() {
+			var jsonStr []byte = []byte(`{
+				"TwilioAccountSid": "some_sid",
+				"TwilioAuthToken": "some_auth_token",
+				"TwilioFromPhone": "some_phone_number",
+				"To": "some_phone_number",
+				"Port": 1234
+		  	}`)
+
+			_, err := config.FromBytes(jsonStr)
+			Expect(err).To(HaveOccurred())
+		})
+
 		It("returns error for incorrect json", func() {
 			var jsonStr []byte = []byte(`{
 				"AccountSid": "some_sid"
@@ -66,7 +72,8 @@ var _ = Describe("Config", func() {
 				"TwilioAuthToken": "some_auth_token",
 				"TwilioFromPhone": "some_phone_number",
 				"To": "some_phone_number",
-				"Port": 1234
+				"Port": 1234,
+				"BrokerUrl": "some_broker_url"
 		  	}`)
 
 			config, err := config.FromBytes(jsonStr)
@@ -77,6 +84,7 @@ var _ = Describe("Config", func() {
 			Expect(config.TwilioFromPhone).To(Equal("some_phone_number"))
 			Expect(config.To).To(Equal("some_phone_number"))
 			Expect(config.Port).To(BeEquivalentTo(1234))
+			Expect(config.BrokerUrl).To(Equal("some_broker_url"))
 		})
 	})
 
