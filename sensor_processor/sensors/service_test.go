@@ -14,9 +14,9 @@ import (
 var _ = Describe("Touch", func() {
 
 	var (
-		service  *sensors.SensorService
-		dataChan chan string
-		gbot     *gobot.Gobot
+		service *sensors.SensorService
+		broker  *mockBroker
+		gbot    *gobot.Gobot
 	)
 
 	BeforeEach(func() {
@@ -24,23 +24,31 @@ var _ = Describe("Touch", func() {
 		log.SetOutput(&testutils.NullReadWriteCloser{})
 
 		gbot = gobot.NewGobot()
-		adapter := testutils.NewMockAdapter("mock adapter")
-		dataChan = make(chan string)
-		service = sensors.Initialize(gbot, adapter, dataChan)
+		adapter := newMockAdapter("mock adapter")
+		broker = newMockBroker()
+		service = sensors.Initialize(gbot, adapter, broker)
 	})
 
 	It("adds touch robot to gobot", func() {
 		service.NewTouchSensor("2")
 		Eventually(gbot.Robots().Len()).Should(Equal(1))
-		Expect(gbot.Robot("TouchSensor-2")).ToNot(BeNil())
+		Expect(gbot.Robot("touchsensor2")).ToNot(BeNil())
 	})
 
-	It("sends alert on dataChan on touch push event", func() {
+	It("sends publishes alert on touch push event", func() {
 		service.NewTouchSensor("3")
 		go gbot.Start()
-
-		Eventually(dataChan).Should(Receive(Equal("TouchSensor-3 Touched")))
-		Eventually(dataChan).Should(Receive(Equal("TouchSensor-3 Released")))
+		broker.IsConnectedOutput.ret0 <- true
+		Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+		Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
+		Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("touched")))
+		// Doing this again, since the channel gets flushed
+		broker.IsConnectedOutput.ret0 <- true
+		Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+		Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
+		Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("released")))
 	})
 
 })

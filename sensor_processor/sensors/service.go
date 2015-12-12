@@ -3,35 +3,46 @@ package sensors
 import (
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/gpio"
+	"github.com/wfernandes/homesec/broker"
 )
 
+const SENSOR_KEY = "/wff/v1/sp1/"
+
 type SensorService struct {
-	gobot    *gobot.Gobot
-	adapter  gpio.DigitalReader
-	dataChan chan string
+	gobot   *gobot.Gobot
+	adapter gpio.DigitalReader
+	broker  broker.Broker
+}
+
+type Broker interface {
+	Connect() error
+	Publish(string, []byte)
+	Subscribe(string, func([]byte))
+	IsConnected() bool
+	Disconnect() error
 }
 
 // TODO: Add logging
-func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, dataCh chan string) *SensorService {
+func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, broker broker.Broker) *SensorService {
 	return &SensorService{
-		gobot:    gobot,
-		adapter:  adapter,
-		dataChan: dataCh,
+		gobot:   gobot,
+		adapter: adapter,
+		broker:  broker,
 	}
 }
 
 func (s *SensorService) NewTouchSensor(pin string) {
 
 	touchSensor := gpio.NewGroveTouchDriver(s.adapter, "touch", pin)
-	name := "TouchSensor-" + pin
+	name := "touchsensor" + pin
 
 	work := func() {
 		gobot.On(touchSensor.Event(gpio.Push), func(data interface{}) {
-			s.dataChan <- name + " Touched"
+			s.publish(name, "touched")
 		})
 
 		gobot.On(touchSensor.Event(gpio.Release), func(data interface{}) {
-			s.dataChan <- name + " Released"
+			s.publish(name, "released")
 		})
 	}
 
@@ -41,4 +52,10 @@ func (s *SensorService) NewTouchSensor(pin string) {
 		work,
 	)
 	s.gobot.AddRobot(robot)
+}
+
+func (s *SensorService) publish(sensorName string, value string) {
+	if s.broker.IsConnected() {
+		s.broker.Publish(SENSOR_KEY+sensorName, []byte(value))
+	}
 }

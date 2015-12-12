@@ -1,4 +1,4 @@
-package testutils
+package sensors_test
 
 import "sync"
 
@@ -8,7 +8,7 @@ type MockAdapter struct {
 	lock  sync.Mutex
 }
 
-func NewMockAdapter(name string) *MockAdapter {
+func newMockAdapter(name string) *MockAdapter {
 	return &MockAdapter{
 		name: name,
 	}

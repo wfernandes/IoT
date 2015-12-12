@@ -7,7 +7,6 @@ import (
 	"github.com/hybridgroup/gobot/platforms/intel-iot/edison"
 	"github.com/wfernandes/homesec/sensor_processor/config"
 	"github.com/wfernandes/homesec/sensor_processor/sensors"
-	"github.com/wfernandes/homesec/sensor_processor/writers"
 )
 
 var configFilePath = flag.String("config", "config/sensor.json", "Path to the Sensor Processor json config file")
@@ -31,9 +30,6 @@ func main() {
 			service.NewTouchSensor(pin)
 		}
 	}
-
-	writer := writers.New(config.NotifierUrl, dataChan)
-	go writer.Start()
 
 	gbot.Start()
 	close(dataChan)
