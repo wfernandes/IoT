@@ -20,9 +20,6 @@ type mockBroker struct {
 		ret0 chan bool
 	}
 	DisconnectCalled chan bool
-	DisconnectOutput struct {
-		ret0 chan error
-	}
 }
 
 func newMockBroker() *mockBroker {
@@ -38,7 +35,6 @@ func newMockBroker() *mockBroker {
 	m.IsConnectedCalled = make(chan bool, 100)
 	m.IsConnectedOutput.ret0 = make(chan bool, 100)
 	m.DisconnectCalled = make(chan bool, 100)
-	m.DisconnectOutput.ret0 = make(chan error, 100)
 	return m
 }
 func (m *mockBroker) Connect() error {
@@ -59,7 +55,6 @@ func (m *mockBroker) IsConnected() bool {
 	m.IsConnectedCalled <- true
 	return <-m.IsConnectedOutput.ret0
 }
-func (m *mockBroker) Disconnect() error {
+func (m *mockBroker) Disconnect() {
 	m.DisconnectCalled <- true
-	return <-m.DisconnectOutput.ret0
 }

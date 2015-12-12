@@ -18,7 +18,7 @@ type Broker interface {
 	Publish(string, []byte)
 	Subscribe(string, func([]byte))
 	IsConnected() bool
-	Disconnect() error
+	Disconnect()
 }
 
 // TODO: Add logging
