@@ -1,16 +1,25 @@
 package sensors
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/gpio"
 )
 
 const SENSOR_KEY = "/wff/v1/sp1/"
+const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"
 
 type SensorService struct {
 	gobot   *gobot.Gobot
 	adapter gpio.DigitalReader
 	broker  Broker
+	sensors Sensors
+}
+
+type Sensors struct {
+	List []string `json:"sensors"`
 }
 
 type Broker interface {
@@ -27,6 +36,7 @@ func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, broker Broker) *
 		gobot:   gobot,
 		adapter: adapter,
 		broker:  broker,
+		sensors: Sensors{},
 	}
 }
 
@@ -34,6 +44,12 @@ func (s *SensorService) NewTouchSensor(pin string) {
 
 	touchSensor := gpio.NewGroveTouchDriver(s.adapter, "touch", pin)
 	name := "touchsensor" + pin
+
+	sensorList, err := s.buildSensorList(name)
+	if err != nil {
+		fmt.Printf("Error building sensor list: %s", err.Error())
+	}
+	s.broker.Publish(SENSORS_LIST_KEY, sensorList)
 
 	work := func() {
 		gobot.On(touchSensor.Event(gpio.Push), func(data interface{}) {
@@ -57,4 +73,9 @@ func (s *SensorService) publish(sensorName string, value string) {
 	if s.broker.IsConnected() {
 		s.broker.Publish(SENSOR_KEY+sensorName, []byte(value))
 	}
+}
+
+func (s *SensorService) buildSensorList(sensorName string) ([]byte, error) {
+	s.sensors.List = append(s.sensors.List, SENSOR_KEY+sensorName)
+	return json.Marshal(s.sensors)
 }

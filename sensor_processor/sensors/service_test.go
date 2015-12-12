@@ -51,4 +51,13 @@ var _ = Describe("Touch", func() {
 		Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("released")))
 	})
 
+	It("publishes sensor name to sensor list", func() {
+		service.NewTouchSensor("4")
+		go gbot.Start()
+		broker.IsConnectedOutput.ret0 <- true
+		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+		Eventually(broker.PublishInput.arg0).Should(Receive(Equal(sensors.SENSORS_LIST_KEY)))
+		Eventually(broker.PublishInput.arg1).Should(Receive(MatchJSON(`{"sensors":["/wff/v1/sp1/touchsensor4"]}`)))
+	})
+
 })
