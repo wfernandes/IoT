@@ -23,6 +23,10 @@ func main() {
 	alertChan := make(chan string, 100)
 
 	mqttBroker := broker.NewMQTTBroker("wff_notification", config.BrokerUrl)
+	err = mqttBroker.Connect()
+	if err != nil {
+		panic(err)
+	}
 	subscriber := subscribe.New(mqttBroker, alertChan)
 	// Subscribe to all available sensor keys
 	go subscriber.Start()
