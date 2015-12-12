@@ -4,8 +4,8 @@ import (
 	"flag"
 
 	"github.com/cloudfoundry/gosteno"
+	"github.com/wfernandes/homesec/broker"
 	"github.com/wfernandes/homesec/notification_processor/config"
-	"github.com/wfernandes/homesec/notification_processor/mqtt"
 	"github.com/wfernandes/homesec/notification_processor/notification"
 	"github.com/wfernandes/homesec/notification_processor/notifiers"
 	"github.com/wfernandes/homesec/notification_processor/subscribe"
@@ -22,8 +22,8 @@ func main() {
 	}
 	alertChan := make(chan string, 100)
 
-	mqttClient := mqtt.New("wff_notification", config.BrokerUrl)
-	subscriber := subscribe.New(mqttClient, alertChan)
+	mqttBroker := broker.NewMQTTBroker("wff_notification", config.BrokerUrl)
+	subscriber := subscribe.New(mqttBroker, alertChan)
 	// Subscribe to all available sensor keys
 	go subscriber.Start()
 

@@ -13,92 +13,64 @@ var _ = Describe("Subscriber", func() {
 
 	var (
 		outputChan chan string
+		broker     *mockBroker
 	)
 	Context("without errors", func() {
 
 		BeforeEach(func() {
 			outputChan = make(chan string, 100)
+			broker = newMockBroker()
 		})
 
 		It("reads initial list of sensor keys", func() {
-			mockMqtt := &MockMQTTClient{
-				ConnectErr: nil,
-			}
-			s := subscribe.New(mockMqtt, outputChan)
+			broker.ConnectOutput.ret0 <- nil
+			s := subscribe.New(broker, outputChan)
 			s.Start()
-			Eventually(func() []string { return s.Subscriptions().Sensors }).Should(HaveLen(2))
-			Expect(s.Subscriptions().Sensors).To(ContainElement("/wff/v1/sp/touchsensor"))
-			Expect(s.Subscriptions().Sensors).To(ContainElement("/wff/v1/sp/soundsensor"))
+			Eventually(broker.ConnectCalled).Should(Receive(BeTrue()))
+			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
+			Eventually(broker.SubscribeInput.arg0).Should(Receive(Equal(subscribe.SENSORS_LIST_KEY)))
+			data := []byte(`{"sensors":["/wff/v1/sp1/touchsensor", "/wff/v1/sp1/soundsensor"]}`)
+			getSensorList := <-broker.SubscribeInput.arg1
+			getSensorList(data)
+			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
+			Eventually(broker.SubscribeInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor")))
+			Eventually(broker.SubscribeInput.arg0).Should(Receive(Equal("/wff/v1/sp1/soundsensor")))
 		})
 
 		It("disconnects mqtt client when stop is called", func() {
-			mockMqtt := &MockMQTTClient{
-				ConnectErr: nil,
-			}
-			s := subscribe.New(mockMqtt, outputChan)
+			s := subscribe.New(broker, outputChan)
 			s.Stop()
 
-			Expect(mockMqtt.DisconnectCalled).To(BeTrue())
+			Eventually(broker.DisconnectCalled).Should(Receive(BeTrue()))
 		})
 
 		It("subscribes to sensor keys from sensor list", func() {
-
-			mockMQTT := &MockMQTTClient{
-				ConnectErr: nil,
-			}
-			s := subscribe.New(mockMQTT, outputChan)
+			broker.ConnectOutput.ret0 <- nil
+			s := subscribe.New(broker, outputChan)
 			s.Start()
-			Eventually(outputChan).Should(Receive(Equal("/wff/v1/sp/touchsensor")))
-			Eventually(outputChan).Should(Receive(Equal("/wff/v1/sp/soundsensor")))
+			data := []byte(`{"sensors":["/wff/v1/sp1/touchsensor", "/wff/v1/sp1/soundsensor"]}`)
+			// get the function passed in and invoke it
+			getSensorList := <-broker.SubscribeInput.arg1
+			getSensorList(data)
+
+			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
+			touchSensorHandler := <-broker.SubscribeInput.arg1
+			touchSensorHandler([]byte("some touch data"))
+			Eventually(outputChan).Should(Receive(Equal("some touch data")))
+
+			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
+			soundSensorHandler := <-broker.SubscribeInput.arg1
+			soundSensorHandler([]byte("some sound data"))
+			Eventually(outputChan).Should(Receive(Equal("some sound data")))
 
 		})
 	})
 
 	Context("with errors", func() {
 		It("panics", func() {
-			mockMqtt := &MockMQTTClient{
-				ConnectErr: fmt.Errorf("some error"),
-			}
-			s := subscribe.New(mockMqtt, nil)
+			broker.ConnectOutput.ret0 <- fmt.Errorf("some error")
+			s := subscribe.New(broker, nil)
 			Expect(s.Start).To(Panic())
 		})
 	})
 })
-
-type MockMQTTClient struct {
-	ConnectErr       error
-	DisconnectCalled bool
-}
-
-func (m *MockMQTTClient) Connect() error {
-	if m.ConnectErr != nil {
-		return m.ConnectErr
-	}
-	return nil
-}
-
-func (m *MockMQTTClient) Disconnect() {
-	m.DisconnectCalled = true
-}
-
-func (m *MockMQTTClient) IsConnected() bool {
-	if m.ConnectErr != nil {
-		return false
-	}
-	return true
-}
-
-func (m *MockMQTTClient) Subscribe(event string, f func([]byte)) {
-	if event == subscribe.SENSORS_LIST_KEY {
-		data := []byte(`{"sensors":["/wff/v1/sp/touchsensor", "/wff/v1/sp/soundsensor"]}`)
-		f(data)
-	} else {
-		// for now pass in the event name as the data
-		f([]byte(event))
-	}
-
-}
-
-func (m *MockMQTTClient) Publish(topic string, data []byte) {
-	// do nothing
-}

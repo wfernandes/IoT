@@ -4,32 +4,36 @@ import (
 	"encoding/json"
 
 	"sync"
-
-	"github.com/wfernandes/homesec/mqtt"
 )
 
 const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"
 
 type Subscribe struct {
-	mqttclient    mqtt.SimpleMQTT
+	broker        Broker
 	subscriptions Sensors
 	outputChan    chan string
 	lock          sync.Mutex
+}
+
+type Broker interface {
+	Connect() error
+	Subscribe(string, func([]byte))
+	Disconnect()
 }
 
 type Sensors struct {
 	Sensors []string `json:"sensors"`
 }
 
-func New(mqttClient mqtt.SimpleMQTT, outputChan chan string) *Subscribe {
+func New(broker Broker, outputChan chan string) *Subscribe {
 	return &Subscribe{
-		mqttclient: mqttClient,
+		broker:     broker,
 		outputChan: outputChan,
 	}
 }
 
 func (s *Subscribe) Start() {
-	err := s.mqttclient.Connect()
+	err := s.broker.Connect()
 	if err != nil {
 		panic(err)
 	}
@@ -41,11 +45,11 @@ func (s *Subscribe) Start() {
 			panic(err)
 		}
 		for _, sensorKey := range s.subscriptions.Sensors {
-			s.mqttclient.Subscribe(sensorKey, s.sensorHandler)
+			s.broker.Subscribe(sensorKey, s.sensorHandler)
 		}
 		s.lock.Unlock()
 	}
-	s.mqttclient.Subscribe(SENSORS_LIST_KEY, getSensorList)
+	s.broker.Subscribe(SENSORS_LIST_KEY, getSensorList)
 }
 
 // TODO: Do we need this function. Don't see its use if we can get the info from outputChan
@@ -56,7 +60,7 @@ func (s *Subscribe) Subscriptions() Sensors {
 }
 
 func (s *Subscribe) Stop() {
-	s.mqttclient.Disconnect()
+	s.broker.Disconnect()
 }
 
 func (s *Subscribe) sensorHandler(dat []byte) {
