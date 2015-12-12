@@ -30,22 +30,30 @@ func (m *MQTTBroker) Connect() error {
 }
 
 func (m *MQTTBroker) Disconnect() {
-	if m.client != nil {
+	if m.IsConnected() {
 		m.client.Disconnect(500)
 	}
 }
 
 func (m *MQTTBroker) Publish(topic string, value []byte) {
-	token := m.client.Publish(topic, 0, false, value)
-	token.Wait()
+	if m.IsConnected() {
+		token := m.client.Publish(topic, 0, false, value)
+		token.Wait()
+	}
 }
 
 func (m *MQTTBroker) Subscribe(event string, f func([]byte)) {
-	m.client.Subscribe(event, 0, func(client *mqtt.Client, msg mqtt.Message) {
-		f(msg.Payload())
-	})
+	if m.IsConnected() {
+		m.client.Subscribe(event, 0, func(client *mqtt.Client, msg mqtt.Message) {
+			f(msg.Payload())
+		})
+	}
 }
 
 func (m *MQTTBroker) IsConnected() bool {
+	if m.client == nil {
+		return false
+	}
+
 	return m.client.IsConnected()
 }
