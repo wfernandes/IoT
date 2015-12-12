@@ -33,5 +33,4 @@ func main() {
 	logger := gosteno.NewLogger("Notification Service")
 	service := notification.New(notifier, alertChan, logger)
 	service.Start()
-
 }

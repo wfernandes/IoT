@@ -16,7 +16,8 @@ var _ = Describe("Config", func() {
 				"2": "touch",
 				"3": "button"
 			},
-			"NotifierUrl": "10.10.10.10:1234"
+			"NotifierUrl": "10.10.10.10:1234",
+			"BrokerUrl": "tcp://something:port"
 		}`)
 
 		conf, err := config.FromBytes(jsonStr)
@@ -35,7 +36,8 @@ var _ = Describe("Config", func() {
 				"2": "touch",
 				"2": "button"
 			},
-			"NotifierUrl": "10.10.10.10:1234"
+			"NotifierUrl": "10.10.10.10:1234",
+			"BrokerUrl": "tcp://something:port"
 		}`)
 
 		conf, err := config.FromBytes(jsonStr)
@@ -54,7 +56,19 @@ var _ = Describe("Config", func() {
 		_, err := config.FromBytes(jsonStr)
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(Equal("Notifier Url required"))
+	})
 
+	It("returns error for missing broker url", func() {
+		jsonStr := []byte(`{
+			"Sensors": {
+				"2": "touch",
+				"2": "button"
+			},
+			"NotifierUrl": "10.10.10.10:1234"
+		}`)
+		_, err := config.FromBytes(jsonStr)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(Equal("Broker Url required"))
 	})
 
 	It("returns error for invalid json", func() {

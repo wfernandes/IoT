@@ -3,7 +3,6 @@ package sensors
 import (
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/gpio"
-	"github.com/wfernandes/homesec/broker"
 )
 
 const SENSOR_KEY = "/wff/v1/sp1/"
@@ -11,7 +10,7 @@ const SENSOR_KEY = "/wff/v1/sp1/"
 type SensorService struct {
 	gobot   *gobot.Gobot
 	adapter gpio.DigitalReader
-	broker  broker.Broker
+	broker  Broker
 }
 
 type Broker interface {
@@ -23,7 +22,7 @@ type Broker interface {
 }
 
 // TODO: Add logging
-func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, broker broker.Broker) *SensorService {
+func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, broker Broker) *SensorService {
 	return &SensorService{
 		gobot:   gobot,
 		adapter: adapter,

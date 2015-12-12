@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Sensors     map[string]string
 	NotifierUrl string
+	BrokerUrl   string
 }
 
 func FromBytes(data []byte) (*Config, error) {
@@ -51,6 +52,10 @@ func (c *Config) validate() error {
 
 	if c.NotifierUrl == "" {
 		return fmt.Errorf("Notifier Url required")
+	}
+
+	if c.BrokerUrl == "" {
+		return fmt.Errorf("Broker Url required")
 	}
 
 	return nil

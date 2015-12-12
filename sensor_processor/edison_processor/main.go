@@ -5,6 +5,7 @@ import (
 
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/intel-iot/edison"
+	"github.com/wfernandes/homesec/broker"
 	"github.com/wfernandes/homesec/sensor_processor/config"
 	"github.com/wfernandes/homesec/sensor_processor/sensors"
 )
@@ -19,10 +20,10 @@ func main() {
 	}
 
 	gbot := gobot.NewGobot()
-	dataChan := make(chan string)
+	broker := broker.NewMQTTBroker("edison processor", config.BrokerUrl)
 	adapter := edison.NewEdisonAdaptor("edison")
 	//	adapter := testutils.NewMockAdapter("mockAdapter")
-	service := sensors.Initialize(gbot, adapter, dataChan)
+	service := sensors.Initialize(gbot, adapter, broker)
 
 	for pin, stype := range config.Sensors {
 		switch stype {
@@ -32,5 +33,4 @@ func main() {
 	}
 
 	gbot.Start()
-	close(dataChan)
 }
