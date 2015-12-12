@@ -21,6 +21,10 @@ func main() {
 
 	gbot := gobot.NewGobot()
 	broker := broker.NewMQTTBroker("edison processor", config.BrokerUrl)
+	err = broker.Connect()
+	if err != nil {
+		panic(err)
+	}
 	adapter := edison.NewEdisonAdaptor("edison")
 	//	adapter := testutils.NewMockAdapter("mockAdapter")
 	service := sensors.Initialize(gbot, adapter, broker)
