@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/wfernandes/homesec/logging"
 )
 
 type Config struct {
@@ -11,10 +13,9 @@ type Config struct {
 	TwilioAuthToken  string
 	TwilioFromPhone  string
 
-	To   string
-	Port uint
-
+	To        string
 	BrokerUrl string
+	LogLevel  logging.LogLevel
 }
 
 func FromBytes(data []byte) (*Config, error) {
@@ -57,6 +58,10 @@ func (c *Config) validate() error {
 
 	if c.BrokerUrl == "" {
 		return fmt.Errorf("MQTT broker url is required")
+	}
+
+	if c.LogLevel.String() == "INVALID" {
+		c.LogLevel = logging.INFO
 	}
 	return nil
 }

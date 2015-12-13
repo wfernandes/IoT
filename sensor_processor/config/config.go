@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strconv"
+
+	"github.com/wfernandes/homesec/logging"
 )
 
 type Config struct {
 	Sensors     map[string]string
 	NotifierUrl string
 	BrokerUrl   string
+	LogLevel    logging.LogLevel
 }
 
 func FromBytes(data []byte) (*Config, error) {
@@ -48,6 +51,10 @@ func (c *Config) validate() error {
 		if !validSensorPin(k) {
 			return fmt.Errorf("Invalid sensor pin: %s", k)
 		}
+	}
+
+	if c.LogLevel.String() == "INVALID" {
+		c.LogLevel = logging.INFO
 	}
 
 	if c.NotifierUrl == "" {

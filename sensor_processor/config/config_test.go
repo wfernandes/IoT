@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/wfernandes/homesec/logging"
 )
 
 var _ = Describe("Config", func() {
@@ -17,7 +18,8 @@ var _ = Describe("Config", func() {
 				"3": "button"
 			},
 			"NotifierUrl": "10.10.10.10:1234",
-			"BrokerUrl": "tcp://something:port"
+			"BrokerUrl": "tcp://something:port",
+			"LogLevel": "DEBUG"
 		}`)
 
 		conf, err := config.FromBytes(jsonStr)
@@ -27,6 +29,17 @@ var _ = Describe("Config", func() {
 		Expect(conf.Sensors).To(HaveLen(2))
 		Expect(conf.Sensors["2"]).To(Equal("touch"))
 		Expect(conf.Sensors["3"]).To(Equal("button"))
+		Expect(conf.LogLevel).To(Equal(logging.DEBUG))
+	})
+
+	It("defaults LogLevel to INFO", func() {
+		jsonStr := []byte(`{
+			"NotifierUrl": "10.10.10.10:1234",
+			"BrokerUrl": "tcp://something:port"
+		}`)
+		conf, err := config.FromBytes(jsonStr)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(conf.LogLevel).To(Equal(logging.INFO))
 
 	})
 

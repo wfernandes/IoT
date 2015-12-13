@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/wfernandes/homesec/logging"
 )
 
 var _ = Describe("Config", func() {
@@ -54,6 +55,7 @@ var _ = Describe("Config", func() {
 
 			_, err := config.FromBytes(jsonStr)
 			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("MQTT broker url is required"))
 		})
 
 		It("returns error for incorrect json", func() {
@@ -72,8 +74,8 @@ var _ = Describe("Config", func() {
 				"TwilioAuthToken": "some_auth_token",
 				"TwilioFromPhone": "some_phone_number",
 				"To": "some_phone_number",
-				"Port": 1234,
-				"BrokerUrl": "some_broker_url"
+				"BrokerUrl": "some_broker_url",
+				"LogLevel": "DEBUG"
 		  	}`)
 
 			config, err := config.FromBytes(jsonStr)
@@ -83,8 +85,22 @@ var _ = Describe("Config", func() {
 			Expect(config.TwilioAuthToken).To(Equal("some_auth_token"))
 			Expect(config.TwilioFromPhone).To(Equal("some_phone_number"))
 			Expect(config.To).To(Equal("some_phone_number"))
-			Expect(config.Port).To(BeEquivalentTo(1234))
 			Expect(config.BrokerUrl).To(Equal("some_broker_url"))
+			Expect(config.LogLevel).To(Equal(logging.DEBUG))
+		})
+
+		It("defaults LogLevel to INFO if not set", func() {
+			var jsonStr []byte = []byte(`{
+				"TwilioAccountSid": "some_sid",
+				"TwilioAuthToken": "some_auth_token",
+				"TwilioFromPhone": "some_phone_number",
+				"BrokerUrl": "some_broker_url"
+		  	}`)
+
+			config, err := config.FromBytes(jsonStr)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(config).ToNot(BeNil())
+			Expect(config.LogLevel).To(Equal(logging.INFO))
 		})
 	})
 
