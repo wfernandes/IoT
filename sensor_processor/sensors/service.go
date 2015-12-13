@@ -6,6 +6,7 @@ import (
 
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/gpio"
+	"github.com/wfernandes/homesec/logging"
 )
 
 const SENSOR_KEY = "/wff/v1/sp1/"
@@ -30,7 +31,6 @@ type Broker interface {
 	Disconnect()
 }
 
-// TODO: Add logging
 func Initialize(gobot *gobot.Gobot, adapter gpio.DigitalReader, broker Broker) *SensorService {
 	return &SensorService{
 		gobot:   gobot,
@@ -67,10 +67,12 @@ func (s *SensorService) NewTouchSensor(pin string) {
 		work,
 	)
 	s.gobot.AddRobot(robot)
+	logging.Log.Infof("Added sensor %s", name)
 }
 
 func (s *SensorService) publish(sensorName string, value string) {
 	if s.broker.IsConnected() {
+		logging.Log.Debugf("Publishing %s", SENSOR_KEY+sensorName)
 		s.broker.Publish(SENSOR_KEY+sensorName, []byte(value))
 	}
 }

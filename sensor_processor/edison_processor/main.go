@@ -6,6 +6,7 @@ import (
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/intel-iot/edison"
 	"github.com/wfernandes/homesec/broker"
+	"github.com/wfernandes/homesec/logging"
 	"github.com/wfernandes/homesec/sensor_processor/config"
 	"github.com/wfernandes/homesec/sensor_processor/sensors"
 )
@@ -18,13 +19,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	gbot := gobot.NewGobot()
+
 	broker := broker.NewMQTTBroker("edison processor", config.BrokerUrl)
 	err = broker.Connect()
 	if err != nil {
 		panic(err)
 	}
+	logging.Log.Info("Successfully connected to broker")
+
 	adapter := edison.NewEdisonAdaptor("edison")
 	//	adapter := testutils.NewMockAdapter("mockAdapter")
 	service := sensors.Initialize(gbot, adapter, broker)
@@ -36,5 +39,6 @@ func main() {
 		}
 	}
 
+	logging.Log.Info("Starting gobot bot...")
 	gbot.Start()
 }
