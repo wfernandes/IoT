@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"github.com/wfernandes/homesec/broker"
+	"github.com/wfernandes/homesec/logging"
 	"github.com/wfernandes/homesec/notification_processor/config"
 	"github.com/wfernandes/homesec/notification_processor/notification"
 	"github.com/wfernandes/homesec/notification_processor/notifiers"
@@ -19,6 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	logging.SetLogLevel(config.LogLevel)
 
 	alertChan := make(chan string, 100)
 	mqttBroker := broker.NewMQTTBroker("wff_notification", config.BrokerUrl)

@@ -19,6 +19,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	logging.SetLogLevel(config.LogLevel)
 	gbot := gobot.NewGobot()
 
 	broker := broker.NewMQTTBroker("edison processor", config.BrokerUrl)
