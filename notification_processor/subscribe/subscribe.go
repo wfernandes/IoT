@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 
 	"sync"
+
+	"github.com/wfernandes/homesec/logging"
 )
 
 const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"
@@ -33,10 +35,12 @@ func New(broker Broker, outputChan chan string) *Subscribe {
 }
 
 func (s *Subscribe) Start() {
+	logging.Log.Info("Starting subscriber...")
 	err := s.broker.Connect()
 	if err != nil {
 		panic(err)
 	}
+	logging.Log.Info("Successfully connected to broker")
 
 	getSensorList := func(dat []byte) {
 		s.lock.Lock()
@@ -44,22 +48,18 @@ func (s *Subscribe) Start() {
 		if err != nil {
 			panic(err)
 		}
+		logging.Log.Infof("Subscribing %d sensors", len(s.subscriptions.Sensors))
 		for _, sensorKey := range s.subscriptions.Sensors {
 			s.broker.Subscribe(sensorKey, s.sensorHandler)
 		}
 		s.lock.Unlock()
 	}
+	logging.Log.Info("Subscribing sensors list")
 	s.broker.Subscribe(SENSORS_LIST_KEY, getSensorList)
 }
 
-// TODO: Do we need this function. Don't see its use if we can get the info from outputChan
-func (s *Subscribe) Subscriptions() Sensors {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-	return s.subscriptions
-}
-
 func (s *Subscribe) Stop() {
+	logging.Log.Info("Stopping subscriber...")
 	s.broker.Disconnect()
 }
 

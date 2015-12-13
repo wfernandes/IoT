@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 
-	"github.com/cloudfoundry/gosteno"
 	"github.com/wfernandes/homesec/broker"
 	"github.com/wfernandes/homesec/notification_processor/config"
 	"github.com/wfernandes/homesec/notification_processor/notification"
@@ -20,13 +19,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	alertChan := make(chan string, 100)
 
+	alertChan := make(chan string, 100)
 	mqttBroker := broker.NewMQTTBroker("wff_notification", config.BrokerUrl)
-	err = mqttBroker.Connect()
-	if err != nil {
-		panic(err)
-	}
 	subscriber := subscribe.New(mqttBroker, alertChan)
 	// Subscribe to all available sensor keys
 	go subscriber.Start()
@@ -34,7 +29,6 @@ func main() {
 	// Initialize twilio notification service
 	notifier := notifiers.NewTwilio(config.TwilioAccountSid, config.TwilioAuthToken, config.TwilioFromPhone, config.To)
 
-	logger := gosteno.NewLogger("Notification Service")
-	service := notification.New(notifier, alertChan, logger)
+	service := notification.New(notifier, alertChan)
 	service.Start()
 }

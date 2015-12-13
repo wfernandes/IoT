@@ -3,7 +3,6 @@ package notification_test
 import (
 	"github.com/wfernandes/homesec/notification_processor/notification"
 
-	"github.com/cloudfoundry/gosteno"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -13,14 +12,12 @@ var _ = Describe("Notification", func() {
 	var (
 		inputChan    chan string
 		mockNotifier *MockNotifier
-		logger       *gosteno.Logger
 		ns           *notification.NotificationService
 	)
 
 	BeforeEach(func() {
 		mockNotifier = &MockNotifier{}
 		inputChan = make(chan string)
-		logger = gosteno.NewLogger("Notification Test Logger")
 	})
 
 	Context("Start", func() {
@@ -29,7 +26,7 @@ var _ = Describe("Notification", func() {
 		})
 
 		It("reads from inputCnan and notifies", func() {
-			ns = notification.New(mockNotifier, inputChan, logger)
+			ns = notification.New(mockNotifier, inputChan)
 
 			go ns.Start()
 
@@ -45,7 +42,7 @@ var _ = Describe("Notification", func() {
 	Context("Stop", func() {
 
 		It("sends a shutdown notification message", func() {
-			ns = notification.New(mockNotifier, inputChan, logger)
+			ns = notification.New(mockNotifier, inputChan)
 			go ns.Start()
 			Expect(mockNotifier.NotifyCallCount()).To(BeZero())
 			ns.Stop()

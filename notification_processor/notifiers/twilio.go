@@ -1,6 +1,9 @@
 package notifiers
 
-import twilio "github.com/carlosdp/twiliogo"
+import (
+	twilio "github.com/carlosdp/twiliogo"
+	"github.com/wfernandes/homesec/logging"
+)
 
 type Notifier interface {
 	Notify(string) error
@@ -23,7 +26,7 @@ func NewTwilio(accountSid, authToken, from, to string) *Twilio {
 }
 
 func (t *Twilio) Notify(body string) error {
-	// TODO: Log the response
-	_, err := twilio.NewMessage(t.client, t.from, t.to, twilio.Body(body))
+	resp, err := twilio.NewMessage(t.client, t.from, t.to, twilio.Body(body))
+	logging.Log.Debugf("Twilio Response: %#v", resp)
 	return err
 }
