@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e 
+
+BIN_DIR=$( cd "$( dirname "$0" )" && pwd )
+cd $BIN_DIR/../sensor_processor/edison_processor
+
+GOOS=linux GOARCH=386 go build main.go
