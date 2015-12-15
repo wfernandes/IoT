@@ -1,11 +1,11 @@
 package config_test
 
 import (
-	"github.com/wfernandes/homesec/sensor_processor/config"
+	"github.com/wfernandes/iot/sensor_processor/config"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/wfernandes/homesec/logging"
+	"github.com/wfernandes/iot/logging"
 )
 
 var _ = Describe("Config", func() {

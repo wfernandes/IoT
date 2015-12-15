@@ -5,10 +5,10 @@ import (
 
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/intel-iot/edison"
-	"github.com/wfernandes/homesec/broker"
-	"github.com/wfernandes/homesec/logging"
-	"github.com/wfernandes/homesec/sensor_processor/config"
-	"github.com/wfernandes/homesec/sensor_processor/sensors"
+	"github.com/wfernandes/iot/broker"
+	"github.com/wfernandes/iot/logging"
+	"github.com/wfernandes/iot/sensor_processor/config"
+	"github.com/wfernandes/iot/sensor_processor/sensors"
 )
 
 var configFilePath = flag.String("config", "config/sensor.json", "Path to the Sensor Processor json config file")

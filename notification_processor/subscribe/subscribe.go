@@ -5,7 +5,7 @@ import (
 
 	"sync"
 
-	"github.com/wfernandes/homesec/logging"
+	"github.com/wfernandes/iot/logging"
 )
 
 const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"

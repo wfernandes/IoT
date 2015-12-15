@@ -1,7 +1,7 @@
 package broker_test
 
 import (
-	"github.com/wfernandes/homesec/broker"
+	"github.com/wfernandes/iot/broker"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

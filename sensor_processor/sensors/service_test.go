@@ -1,14 +1,14 @@
 package sensors_test
 
 import (
-	"github.com/wfernandes/homesec/sensor_processor/sensors"
+	"github.com/wfernandes/iot/sensor_processor/sensors"
 
 	"log"
 
 	"github.com/hybridgroup/gobot"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/wfernandes/homesec/sensor_processor/testutils"
+	"github.com/wfernandes/iot/sensor_processor/testutils"
 )
 
 var _ = Describe("Touch", func() {

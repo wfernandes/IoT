@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 
-	"github.com/wfernandes/homesec/broker"
-	"github.com/wfernandes/homesec/logging"
-	"github.com/wfernandes/homesec/notification_processor/config"
-	"github.com/wfernandes/homesec/notification_processor/notification"
-	"github.com/wfernandes/homesec/notification_processor/notifiers"
-	"github.com/wfernandes/homesec/notification_processor/subscribe"
+	"github.com/wfernandes/iot/broker"
+	"github.com/wfernandes/iot/logging"
+	"github.com/wfernandes/iot/notification_processor/config"
+	"github.com/wfernandes/iot/notification_processor/notification"
+	"github.com/wfernandes/iot/notification_processor/notifiers"
+	"github.com/wfernandes/iot/notification_processor/subscribe"
 )
 
 var configFilePath = flag.String("config", "config/homesec.json", "Path to the HomeSec json config file")

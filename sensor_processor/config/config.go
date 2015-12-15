@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/wfernandes/homesec/logging"
+	"github.com/wfernandes/iot/logging"
 )
 
 type Config struct {

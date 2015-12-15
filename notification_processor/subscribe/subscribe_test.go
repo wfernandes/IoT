@@ -3,7 +3,7 @@ package subscribe_test
 import (
 	"fmt"
 
-	"github.com/wfernandes/homesec/notification_processor/subscribe"
+	"github.com/wfernandes/iot/notification_processor/subscribe"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

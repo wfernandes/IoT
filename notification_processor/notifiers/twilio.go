@@ -2,7 +2,7 @@ package notifiers
 
 import (
 	twilio "github.com/carlosdp/twiliogo"
-	"github.com/wfernandes/homesec/logging"
+	"github.com/wfernandes/iot/logging"
 )
 
 type Notifier interface {

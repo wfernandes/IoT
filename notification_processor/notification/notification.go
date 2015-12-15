@@ -1,8 +1,8 @@
 package notification
 
 import (
-	"github.com/wfernandes/homesec/logging"
-	"github.com/wfernandes/homesec/notification_processor/notifiers"
+	"github.com/wfernandes/iot/logging"
+	"github.com/wfernandes/iot/notification_processor/notifiers"
 )
 
 const CLOSE_MESSAGE = "Notification Service Shutdown"

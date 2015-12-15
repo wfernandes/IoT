@@ -1,7 +1,7 @@
 package notification_test
 
 import (
-	"github.com/wfernandes/homesec/notification_processor/notification"
+	"github.com/wfernandes/iot/notification_processor/notification"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

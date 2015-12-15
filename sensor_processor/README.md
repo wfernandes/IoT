@@ -15,7 +15,7 @@ Cross-compile `go` for the linux architecture. This is assuming you are running 
 cd <src directory of golang>
 GOOS=linux GOARCH=386 ./make.bash
 
-cd ~/workspace/src/github.com/wfernandes/homesec/sensor_processor/edison_processor
+cd ~/workspace/src/github.com/wfernandes/iot/sensor_processor/edison_processor
 GOOS=linux GOARCH=386 go build main.go
 ```
 
