@@ -1,3 +1,5 @@
+[![Build Status](https://drone.io/github.com/wfernandes/iot/status.png)](https://drone.io/github.com/wfernandes/iot/latest)
+
 ## IoT Sensor Notification System
 
 This is a first pass at creating a working end-to-end system that consumes sensor data/events and notifies a user.
