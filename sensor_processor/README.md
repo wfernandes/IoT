@@ -19,6 +19,9 @@ cd ~/workspace/src/github.com/wfernandes/iot/sensor_processor/edison_processor
 GOOS=linux GOARCH=386 go build main.go
 ```
 
+Or you can use the build script in `bin/build_sensor_processor`
+
+
 After the binary has been generated, `scp` it onto the Intel Edison
 
 ### Running the binary

@@ -15,3 +15,7 @@ Currently, it notifies a single user via SMS using the [Twilio API library](http
 |BrokerUrl | Yes | The url of the broker key-value store |
 |To        | No | The phone number of the user to receive the alerts. It should have the country code specified. E.g. `+1##########`
 |LogLevel  | No | The logging level of the process. Default is INFO. Options are: `INFO, ERROR, FATAL, DEBUG`  
+
+### Building the Notification Processor
+
+Run the script `bin/build_notification_processor`
