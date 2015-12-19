@@ -20,7 +20,7 @@ func init() {
 		log: gologging.MustGetLogger("default"),
 	}
 
-	format := gologging.MustStringFormatter(`%{color}%{time:15:04:05.000} %{level:.4s} %{color:reset} %{message}`)
+	format := gologging.MustStringFormatter(`%{shortfile} %{color} %{time:2006-01-02T15:04:05.000000Z} %{level:.4s} %{color:reset} %{message}`)
 	backend := gologging.NewLogBackend(os.Stdout, "", 0)
 	backendFormatter := gologging.NewBackendFormatter(backend, format)
 	leveledBackend = gologging.AddModuleLevel(backendFormatter)
