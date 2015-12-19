@@ -37,6 +37,8 @@ func main() {
 		switch stype {
 		case "touch":
 			service.NewTouchSensor(pin)
+		case "sound":
+			service.NewSoundSensor(pin)
 		}
 	}
 

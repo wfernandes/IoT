@@ -11,7 +11,7 @@ import (
 	"github.com/wfernandes/iot/sensor_processor/testutils"
 )
 
-var _ = Describe("Touch", func() {
+var _ = Describe("Sensors", func() {
 
 	var (
 		service *sensors.SensorService
@@ -29,28 +29,6 @@ var _ = Describe("Touch", func() {
 		service = sensors.Initialize(gbot, adapter, broker)
 	})
 
-	It("adds touch robot to gobot", func() {
-		service.NewTouchSensor("2")
-		Eventually(gbot.Robots().Len()).Should(Equal(1))
-		Expect(gbot.Robot("touchsensor2")).ToNot(BeNil())
-	})
-
-	It("sends publishes alert on touch push event", func() {
-		service.NewTouchSensor("3")
-		go gbot.Start()
-		broker.IsConnectedOutput.ret0 <- true
-		Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
-		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
-		Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
-		Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("touched")))
-		// Doing this again, since the channel gets flushed
-		broker.IsConnectedOutput.ret0 <- true
-		Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
-		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
-		Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
-		Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("released")))
-	})
-
 	It("publishes sensor name to sensor list", func() {
 		service.NewTouchSensor("4")
 		go gbot.Start()
@@ -58,6 +36,53 @@ var _ = Describe("Touch", func() {
 		Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
 		Eventually(broker.PublishInput.arg0).Should(Receive(Equal(sensors.SENSORS_LIST_KEY)))
 		Eventually(broker.PublishInput.arg1).Should(Receive(MatchJSON(`{"sensors":["/wff/v1/sp1/touchsensor4"]}`)))
+	})
+
+	Context("Touch", func() {
+
+		It("adds touch robot to gobot", func() {
+			service.NewTouchSensor("2")
+			Eventually(gbot.Robots().Len()).Should(Equal(1))
+			Expect(gbot.Robot("touchsensor2")).ToNot(BeNil())
+		})
+
+		It("publishes alert on touch push event", func() {
+			service.NewTouchSensor("3")
+			go gbot.Start()
+			broker.IsConnectedOutput.ret0 <- true
+			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("touched")))
+			// Doing this again, since the channel gets flushed
+			broker.IsConnectedOutput.ret0 <- true
+			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("released")))
+		})
+	})
+
+	Context("Sound", func() {
+		It("adds sound robot to gobot", func() {
+			service.NewSoundSensor("4")
+			go gbot.Start()
+			broker.IsConnectedOutput.ret0 <- true
+			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishInput.arg0).Should(Receive(Equal(sensors.SENSORS_LIST_KEY)))
+			Eventually(broker.PublishInput.arg1).Should(Receive(MatchJSON(`{"sensors":["/wff/v1/sp1/soundsensor4"]}`)))
+		})
+
+		It("publishes alert on acoustic event ", func() {
+
+			service.NewSoundSensor("5")
+			go gbot.Start()
+			broker.IsConnectedOutput.ret0 <- true
+			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/soundsensor5")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("noise detected")))
+		})
 	})
 
 })

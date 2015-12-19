@@ -1,6 +1,10 @@
 package sensors_test
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/wfernandes/iot/sensor_processor/sensors"
+)
 
 type MockAdapter struct {
 	name  string
@@ -41,4 +45,16 @@ func (m *MockAdapter) Connect() []error {
 func (m *MockAdapter) Finalize() []error {
 	var errs []error
 	return errs
+}
+
+func (m *MockAdapter) AnalogRead(string) (int, error) {
+	m.lock.Lock()
+	if m.state == 0 {
+		m.state = sensors.SOUND_THRESHOLD + 1
+	} else {
+		m.state = 0
+
+	}
+	m.lock.Unlock()
+	return m.state, nil
 }

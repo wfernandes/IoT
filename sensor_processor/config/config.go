@@ -69,7 +69,7 @@ func (c *Config) validate() error {
 }
 
 func expectedSensors() []string {
-	return []string{"touch", "button"}
+	return []string{"touch", "sound"}
 }
 
 func validSensorType(value string) bool {

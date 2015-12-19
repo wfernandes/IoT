@@ -15,7 +15,7 @@ var _ = Describe("Config", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2": "touch",
-				"3": "button"
+				"3": "sound"
 			},
 			"NotifierUrl": "10.10.10.10:1234",
 			"BrokerUrl": "tcp://something:port",
@@ -28,7 +28,7 @@ var _ = Describe("Config", func() {
 		Expect(conf.NotifierUrl).To(Equal("10.10.10.10:1234"))
 		Expect(conf.Sensors).To(HaveLen(2))
 		Expect(conf.Sensors["2"]).To(Equal("touch"))
-		Expect(conf.Sensors["3"]).To(Equal("button"))
+		Expect(conf.Sensors["3"]).To(Equal("sound"))
 		Expect(conf.LogLevel).To(Equal(logging.DEBUG))
 	})
 
@@ -47,7 +47,7 @@ var _ = Describe("Config", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2": "touch",
-				"2": "button"
+				"2": "sound"
 			},
 			"NotifierUrl": "10.10.10.10:1234",
 			"BrokerUrl": "tcp://something:port"
@@ -56,14 +56,14 @@ var _ = Describe("Config", func() {
 		conf, err := config.FromBytes(jsonStr)
 		Expect(err).ToNot(HaveOccurred())
 		Expect(conf.Sensors).To(HaveLen(1))
-		Expect(conf.Sensors["2"]).To(Equal("button"))
+		Expect(conf.Sensors["2"]).To(Equal("sound"))
 	})
 
 	It("returns error for missing notifier url", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2": "touch",
-				"3": "button"
+				"3": "sound"
 			}
 		}`)
 		_, err := config.FromBytes(jsonStr)
@@ -75,7 +75,7 @@ var _ = Describe("Config", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2": "touch",
-				"2": "button"
+				"2": "sound"
 			},
 			"NotifierUrl": "10.10.10.10:1234"
 		}`)
@@ -89,7 +89,7 @@ var _ = Describe("Config", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2": "touch"
-				"3": "button"
+				"3": "sound"
 			},
 			"NotifierUrl": "10.10.10.10:1234"
 		}`)
@@ -116,7 +116,7 @@ var _ = Describe("Config", func() {
 		jsonStr := []byte(`{
 			"Sensors": {
 				"2a": "touch",
-				"3": "button"
+				"3": "sound"
 			},
 			"NotifierUrl": "10.10.10.10:1234"
 		}`)
