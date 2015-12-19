@@ -24,3 +24,7 @@ ginkgo -r
 ### Wiki
 
 The [wiki](https://github.com/wfernandes/IoT/wiki) contains more information regarding process, troubleshooting and setup I did so that I could reference my silliness in the future.
+
+### Future Work
+
+I've been tracking ideas on the [issues page](https://github.com/wfernandes/IoT/issues) and marking what is important to work on.
