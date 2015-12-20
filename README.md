@@ -18,7 +18,7 @@ The sensor processor which would run on something like a Raspberry Pi or Intel E
 
 ### Tests
 ```
-ginkgo -r
+./bin/test
 ```
 
 ### Wiki
