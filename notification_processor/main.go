@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"github.com/wfernandes/iot/broker"
+	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
 	"github.com/wfernandes/iot/notification_processor/config"
 	"github.com/wfernandes/iot/notification_processor/notification"
@@ -22,7 +23,7 @@ func main() {
 	}
 	logging.SetLogLevel(config.LogLevel)
 
-	alertChan := make(chan string, 100)
+	alertChan := make(chan *event.Event, 100)
 	mqttBroker := broker.NewMQTTBroker("wff_notification", config.BrokerUrl)
 	subscriber := subscribe.New(mqttBroker, alertChan)
 	// Subscribe to all available sensor keys

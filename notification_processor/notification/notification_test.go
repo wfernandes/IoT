@@ -5,19 +5,25 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/wfernandes/iot/event"
 )
 
 var _ = Describe("Notification", func() {
 
 	var (
-		inputChan    chan string
+		inputChan    chan *event.Event
 		mockNotifier *MockNotifier
 		ns           *notification.NotificationService
+		sensorEvent  *event.Event
 	)
 
 	BeforeEach(func() {
 		mockNotifier = &MockNotifier{}
-		inputChan = make(chan string)
+		inputChan = make(chan *event.Event)
+		sensorEvent = &event.Event{
+			Name: "touchsensor1",
+			Data: "test message",
+		}
 	})
 
 	Context("Start", func() {
@@ -25,13 +31,13 @@ var _ = Describe("Notification", func() {
 			ns.Stop()
 		})
 
-		It("reads from inputCnan and notifies", func() {
+		It("reads from inputChan and notifies", func() {
 			ns = notification.New(mockNotifier, inputChan)
 
 			go ns.Start()
 
 			Expect(mockNotifier.NotifyCallCount()).To(BeZero())
-			inputChan <- "test message"
+			inputChan <- sensorEvent
 			Eventually(mockNotifier.NotifyCallCount).Should(Equal(1))
 			Expect(mockNotifier.lastNotification).To(Equal("test message"))
 		})

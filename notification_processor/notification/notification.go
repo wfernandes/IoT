@@ -1,6 +1,7 @@
 package notification
 
 import (
+	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
 	"github.com/wfernandes/iot/notification_processor/notifiers"
 )
@@ -9,10 +10,10 @@ const CLOSE_MESSAGE = "Notification Service Shutdown"
 
 type NotificationService struct {
 	notifier  notifiers.Notifier
-	inputChan chan string
+	inputChan chan *event.Event
 }
 
-func New(notifier notifiers.Notifier, inputChan chan string) *NotificationService {
+func New(notifier notifiers.Notifier, inputChan chan *event.Event) *NotificationService {
 
 	return &NotificationService{
 		notifier:  notifier,
@@ -23,8 +24,8 @@ func New(notifier notifiers.Notifier, inputChan chan string) *NotificationServic
 func (n *NotificationService) Start() {
 	var err error
 	logging.Log.Info("Notification service started...")
-	for body := range n.inputChan {
-		err = n.notifier.Notify(body)
+	for event := range n.inputChan {
+		err = n.notifier.Notify(event.Data)
 		if err != nil {
 			logging.Log.Error("Error notifying", err)
 		}
