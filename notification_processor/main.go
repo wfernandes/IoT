@@ -34,6 +34,6 @@ func main() {
 	// Initialize twilio notification service
 	notifier := notifiers.NewTwilio(config.TwilioAccountSid, config.TwilioAuthToken, config.TwilioFromPhone, config.To)
 
-	service := notification.New(notifier, alertChan, config.NotificationIntervalMinutes*time.Minute)
+	service := notification.New(notifier, alertChan, time.Duration(config.NotificationIntervalMinutes)*time.Minute)
 	service.Start()
 }

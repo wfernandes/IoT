@@ -5,20 +5,23 @@ import (
 
 	"github.com/wfernandes/iot/notification_processor/subscribe"
 
+	"encoding/json"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/wfernandes/iot/event"
 )
 
 var _ = Describe("Subscriber", func() {
 
 	var (
-		outputChan chan string
+		outputChan chan *event.Event
 		broker     *mockBroker
 	)
 	Context("without errors", func() {
 
 		BeforeEach(func() {
-			outputChan = make(chan string, 100)
+			outputChan = make(chan *event.Event, 100)
 			broker = newMockBroker()
 		})
 
@@ -53,15 +56,23 @@ var _ = Describe("Subscriber", func() {
 			getSensorList := <-broker.SubscribeInput.arg1
 			getSensorList(data)
 
-			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
-			touchSensorHandler := <-broker.SubscribeInput.arg1
-			touchSensorHandler([]byte("some touch data"))
-			Eventually(outputChan).Should(Receive(Equal("some touch data")))
+			evnt := &event.Event{
+				Name: "sensor1",
+				Data: "some touch data",
+			}
+			evntBytes, _ := json.Marshal(evnt)
 
 			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
+			touchSensorHandler := <-broker.SubscribeInput.arg1
+			touchSensorHandler(evntBytes)
+			Eventually(outputChan).Should(Receive(Equal(evnt)))
+
+			evnt.Data = "some sound data"
+			evntBytes, _ = json.Marshal(evnt)
+			Eventually(broker.SubscribeCalled).Should(Receive(BeTrue()))
 			soundSensorHandler := <-broker.SubscribeInput.arg1
-			soundSensorHandler([]byte("some sound data"))
-			Eventually(outputChan).Should(Receive(Equal("some sound data")))
+			soundSensorHandler(evntBytes)
+			Eventually(outputChan).Should(Receive(Equal(evnt)))
 
 		})
 	})

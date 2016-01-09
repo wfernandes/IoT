@@ -30,6 +30,7 @@ func (n *NotificationService) Start() {
 	var err error
 	logging.Log.Info("Notification service started...")
 	for event := range n.inputChan {
+		logging.Log.Debugf("Received event: %s", event.Name)
 		err = n.notify(event)
 		if err != nil {
 			logging.Log.Error("Error notifying", err)
@@ -49,11 +50,14 @@ func (n *NotificationService) notify(evnt *event.Event) error {
 	lastNotified, ok := n.sensorsNotified[evnt.Name]
 	if !ok {
 		n.sensorsNotified[evnt.Name] = time.Now()
+		logging.Log.Debugf("Notifying event for %s", evnt.Name)
 		return n.notifier.Notify(evnt.Data)
 	}
 	if lastNotified.Add(n.duration).After(time.Now()) {
 		return nil
 	} else {
+		n.sensorsNotified[evnt.Name] = time.Now()
+		logging.Log.Debugf("Notifying event for %s", evnt.Name)
 		return n.notifier.Notify(evnt.Data)
 	}
 

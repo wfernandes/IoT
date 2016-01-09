@@ -5,6 +5,7 @@ import (
 
 	"sync"
 
+	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
 )
 
@@ -13,7 +14,7 @@ const SENSORS_LIST_KEY = "/wff/v1/sp1/sensors/"
 type Subscribe struct {
 	broker        Broker
 	subscriptions Sensors
-	outputChan    chan string
+	outputChan    chan *event.Event
 	lock          sync.Mutex
 }
 
@@ -27,7 +28,7 @@ type Sensors struct {
 	Sensors []string `json:"sensors"`
 }
 
-func New(broker Broker, outputChan chan string) *Subscribe {
+func New(broker Broker, outputChan chan *event.Event) *Subscribe {
 	return &Subscribe{
 		broker:     broker,
 		outputChan: outputChan,
@@ -64,5 +65,12 @@ func (s *Subscribe) Stop() {
 }
 
 func (s *Subscribe) sensorHandler(dat []byte) {
-	s.outputChan <- string(dat)
+	var evnt *event.Event
+	err := json.Unmarshal(dat, &evnt)
+	if err != nil {
+		logging.Log.Error("Unable to unmarshall sensor data", err)
+		logging.Log.Debugf("Sensor Data: %s", string(dat))
+		return
+	}
+	s.outputChan <- evnt
 }

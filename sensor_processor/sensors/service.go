@@ -111,9 +111,9 @@ func (s *SensorService) NewSoundSensor(pin string) {
 
 func (s *SensorService) publish(event *event.Event) {
 	if s.broker.IsConnected() {
-		eventData, _ := json.Marshal(event)
+		eventBytes, _ := json.Marshal(event)
 		logging.Log.Debugf("Publishing %s", SENSOR_KEY+event.Name)
-		s.broker.Publish(SENSOR_KEY+event.Name, eventData)
+		s.broker.Publish(SENSOR_KEY+event.Name, eventBytes)
 	}
 }
 
