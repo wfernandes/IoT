@@ -75,6 +75,7 @@ var _ = Describe("Config", func() {
 				"TwilioFromPhone": "some_phone_number",
 				"To": "some_phone_number",
 				"BrokerUrl": "some_broker_url",
+				"NotificationIntervalMinutes": 7,
 				"LogLevel": "DEBUG"
 		  	}`)
 
@@ -86,10 +87,11 @@ var _ = Describe("Config", func() {
 			Expect(config.TwilioFromPhone).To(Equal("some_phone_number"))
 			Expect(config.To).To(Equal("some_phone_number"))
 			Expect(config.BrokerUrl).To(Equal("some_broker_url"))
+			Expect(config.NotificationIntervalMinutes).To(Equal(7))
 			Expect(config.LogLevel).To(Equal(logging.DEBUG))
 		})
 
-		It("defaults LogLevel to INFO if not set", func() {
+		It("sets defaults if not set", func() {
 			var jsonStr []byte = []byte(`{
 				"TwilioAccountSid": "some_sid",
 				"TwilioAuthToken": "some_auth_token",
@@ -100,6 +102,7 @@ var _ = Describe("Config", func() {
 			config, err := config.FromBytes(jsonStr)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(config).ToNot(BeNil())
+			Expect(config.NotificationIntervalMinutes).To(Equal(10))
 			Expect(config.LogLevel).To(Equal(logging.INFO))
 		})
 	})

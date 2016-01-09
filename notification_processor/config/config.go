@@ -13,9 +13,10 @@ type Config struct {
 	TwilioAuthToken  string
 	TwilioFromPhone  string
 
-	To        string
-	BrokerUrl string
-	LogLevel  logging.LogLevel
+	To                          string
+	BrokerUrl                   string
+	NotificationIntervalMinutes int
+	LogLevel                    logging.LogLevel
 }
 
 func FromBytes(data []byte) (*Config, error) {
@@ -62,6 +63,10 @@ func (c *Config) validate() error {
 
 	if c.LogLevel.String() == "INVALID" {
 		c.LogLevel = logging.INFO
+	}
+
+	if c.NotificationIntervalMinutes == 0 {
+		c.NotificationIntervalMinutes = 10
 	}
 	return nil
 }

@@ -1,6 +1,8 @@
 package notification
 
 import (
+	"time"
+
 	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
 	"github.com/wfernandes/iot/notification_processor/notifiers"
@@ -9,15 +11,18 @@ import (
 const CLOSE_MESSAGE = "Notification Service Shutdown"
 
 type NotificationService struct {
-	notifier  notifiers.Notifier
-	inputChan chan *event.Event
+	notifier        notifiers.Notifier
+	sensorsNotified map[string]time.Time
+	inputChan       chan *event.Event
+	duration        time.Duration
 }
 
-func New(notifier notifiers.Notifier, inputChan chan *event.Event) *NotificationService {
-
+func New(notifier notifiers.Notifier, inputChan chan *event.Event, notificationPeriod time.Duration) *NotificationService {
 	return &NotificationService{
-		notifier:  notifier,
-		inputChan: inputChan,
+		notifier:        notifier,
+		inputChan:       inputChan,
+		sensorsNotified: make(map[string]time.Time),
+		duration:        notificationPeriod,
 	}
 }
 
@@ -25,7 +30,7 @@ func (n *NotificationService) Start() {
 	var err error
 	logging.Log.Info("Notification service started...")
 	for event := range n.inputChan {
-		err = n.notifier.Notify(event.Data)
+		err = n.notify(event)
 		if err != nil {
 			logging.Log.Error("Error notifying", err)
 		}
@@ -38,4 +43,18 @@ func (n *NotificationService) Start() {
 
 func (n *NotificationService) Stop() {
 	close(n.inputChan)
+}
+
+func (n *NotificationService) notify(evnt *event.Event) error {
+	lastNotified, ok := n.sensorsNotified[evnt.Name]
+	if !ok {
+		n.sensorsNotified[evnt.Name] = time.Now()
+		return n.notifier.Notify(evnt.Data)
+	}
+	if lastNotified.Add(n.duration).After(time.Now()) {
+		return nil
+	} else {
+		return n.notifier.Notify(evnt.Data)
+	}
+
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 
+	"time"
+
 	"github.com/wfernandes/iot/broker"
 	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
@@ -32,6 +34,6 @@ func main() {
 	// Initialize twilio notification service
 	notifier := notifiers.NewTwilio(config.TwilioAccountSid, config.TwilioAuthToken, config.TwilioFromPhone, config.To)
 
-	service := notification.New(notifier, alertChan)
+	service := notification.New(notifier, alertChan, config.NotificationIntervalMinutes*time.Minute)
 	service.Start()
 }
