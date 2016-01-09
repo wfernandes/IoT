@@ -5,9 +5,12 @@ import (
 
 	"log"
 
+	"encoding/json"
+
 	"github.com/hybridgroup/gobot"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/sensor_processor/testutils"
 )
 
@@ -48,18 +51,29 @@ var _ = Describe("Sensors", func() {
 
 		It("publishes alert on touch push event", func() {
 			service.NewTouchSensor("3")
+			evt := event.Event{
+				Name: "touchsensor3",
+				Data: "touched",
+			}
+			eventTouched, _ := json.Marshal(evt)
+			evt = event.Event{
+				Name: "touchsensor3",
+				Data: "released",
+			}
+			eventReleased, _ := json.Marshal(evt)
+
 			go gbot.Start()
 			broker.IsConnectedOutput.ret0 <- true
 			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
-			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("touched")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(Equal(eventTouched)))
 			// Doing this again, since the channel gets flushed
 			broker.IsConnectedOutput.ret0 <- true
 			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/touchsensor3")))
-			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("released")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(Equal(eventReleased)))
 		})
 	})
 
@@ -74,14 +88,18 @@ var _ = Describe("Sensors", func() {
 		})
 
 		It("publishes alert on acoustic event ", func() {
-
 			service.NewSoundSensor("5")
+			evt := event.Event{
+				Name: "soundsensor5",
+				Data: "noise detected",
+			}
+			eventSound, _ := json.Marshal(evt)
 			go gbot.Start()
 			broker.IsConnectedOutput.ret0 <- true
 			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
 			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/soundsensor5")))
-			Eventually(broker.PublishInput.arg1).Should(Receive(BeEquivalentTo("noise detected")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(Equal(eventSound)))
 		})
 	})
 

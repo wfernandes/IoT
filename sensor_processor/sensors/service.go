@@ -5,6 +5,7 @@ import (
 
 	"github.com/hybridgroup/gobot"
 	"github.com/hybridgroup/gobot/platforms/gpio"
+	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
 )
 
@@ -50,16 +51,24 @@ func (s *SensorService) NewTouchSensor(pin string) {
 
 	touchSensor := gpio.NewGroveTouchDriver(s.adapter, "touch", pin)
 	name := "touchsensor" + pin
+	eventTouched := &event.Event{
+		Name: name,
+		Data: "touched",
+	}
+	eventReleased := &event.Event{
+		Name: name,
+		Data: "released",
+	}
 
 	s.publishSensorList(name)
 
 	work := func() {
 		gobot.On(touchSensor.Event(gpio.Push), func(data interface{}) {
-			s.publish(name, "touched")
+			s.publish(eventTouched)
 		})
 
 		gobot.On(touchSensor.Event(gpio.Release), func(data interface{}) {
-			s.publish(name, "released")
+			s.publish(eventReleased)
 		})
 	}
 
@@ -76,13 +85,17 @@ func (s *SensorService) NewSoundSensor(pin string) {
 
 	soundSensor := gpio.NewGroveSoundSensorDriver(s.adapter, "sound", pin)
 	name := "soundsensor" + pin
+	eventSound := &event.Event{
+		Name: name,
+		Data: "noise detected",
+	}
 	s.publishSensorList(name)
 
 	work := func() {
 		gobot.On(soundSensor.Event(gpio.Data), func(data interface{}) {
 			logging.Log.Debugf("sound data %d", data)
 			if data.(int) > SOUND_THRESHOLD {
-				s.publish(name, "noise detected")
+				s.publish(eventSound)
 			}
 		})
 	}
@@ -96,10 +109,11 @@ func (s *SensorService) NewSoundSensor(pin string) {
 	logging.Log.Infof("Added sensor %s", name)
 }
 
-func (s *SensorService) publish(sensorName string, value string) {
+func (s *SensorService) publish(event *event.Event) {
 	if s.broker.IsConnected() {
-		logging.Log.Debugf("Publishing %s", SENSOR_KEY+sensorName)
-		s.broker.Publish(SENSOR_KEY+sensorName, []byte(value))
+		eventData, _ := json.Marshal(event)
+		logging.Log.Debugf("Publishing %s", SENSOR_KEY+event.Name)
+		s.broker.Publish(SENSOR_KEY+event.Name, eventData)
 	}
 }
 
