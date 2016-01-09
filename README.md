@@ -9,7 +9,7 @@ The intention of this project was to create a platform where a user could be not
 sensor input data. 
 
 The sensor processor which would run on something like a Raspberry Pi or Intel Edison would consume sensor data/events
- and send it to the notification processor over UDP. The notification processor could either run on a local machine or 
+ and send it to the notification processor over MQTT via a MQTT Broker. The notification processor could either run on a local machine or 
  on the cloud, say on a platform like [Cloud Foundry](http://docs.cloudfoundry.org/concepts/).
  
 ### Architecture
@@ -20,6 +20,12 @@ The sensor processor which would run on something like a Raspberry Pi or Intel E
 ```
 ./bin/test
 ```
+
+### Building the Components
+Run `./bin/build_notification_processor` to build the notification processor.
+
+Run `./bin/build_sensor_processor` to build the sensor processor. Currently, the sensor processor builds on a linux/amd64 system. This allows the
+sensor processor binary to work on the Intel Edison and the Raspberry Pi.
 
 ### Wiki
 
