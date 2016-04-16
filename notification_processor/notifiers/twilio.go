@@ -5,10 +5,6 @@ import (
 	"github.com/wfernandes/iot/logging"
 )
 
-type Notifier interface {
-	Notify(string) error
-}
-
 type Twilio struct {
 	client *twilio.TwilioClient
 	from   string

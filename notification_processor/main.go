@@ -31,7 +31,7 @@ func main() {
 	// Subscribe to all available sensor keys
 	go subscriber.Start()
 
-	// Initialize twilio notification service
+	// Set up the Twilio notifier
 	notifier := notifiers.NewTwilio(config.TwilioAccountSid, config.TwilioAuthToken, config.TwilioFromPhone, config.To)
 
 	service := notification.New(notifier, alertChan, time.Duration(config.NotificationIntervalMinutes)*time.Minute)

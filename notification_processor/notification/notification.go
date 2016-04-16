@@ -5,19 +5,22 @@ import (
 
 	"github.com/wfernandes/iot/event"
 	"github.com/wfernandes/iot/logging"
-	"github.com/wfernandes/iot/notification_processor/notifiers"
 )
 
-const CLOSE_MESSAGE = "Notification Service Shutdown"
+const SHUTDOWN_MESSAGE = "Notification Service Shutdown"
 
 type NotificationService struct {
-	notifier        notifiers.Notifier
+	notifier        Notifier
 	sensorsNotified map[string]time.Time
 	inputChan       chan *event.Event
 	duration        time.Duration
 }
 
-func New(notifier notifiers.Notifier, inputChan chan *event.Event, notificationPeriod time.Duration) *NotificationService {
+type Notifier interface {
+	Notify(string) error
+}
+
+func New(notifier Notifier, inputChan chan *event.Event, notificationPeriod time.Duration) *NotificationService {
 	return &NotificationService{
 		notifier:        notifier,
 		inputChan:       inputChan,
@@ -36,7 +39,7 @@ func (n *NotificationService) Start() {
 			logging.Log.Error("Error notifying", err)
 		}
 	}
-	err = n.notifier.Notify(CLOSE_MESSAGE)
+	err = n.notifier.Notify(SHUTDOWN_MESSAGE)
 	if err != nil {
 		logging.Log.Errorf("Error sending close notification", err)
 	}
