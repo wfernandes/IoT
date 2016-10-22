@@ -1,4 +1,4 @@
-[![Build Status](https://drone.io/github.com/wfernandes/iot/status.png)](https://drone.io/github.com/wfernandes/iot/latest)
+[![Build Status](https://travis-ci.org/wfernandes/IoT.svg?branch=master)](https://travis-ci.org/wfernandes/IoT)
 
 ## IoT Sensor Notification System
 
