@@ -63,11 +63,11 @@ func (s *SensorService) NewTouchSensor(pin string) {
 	s.publishSensorList(name)
 
 	work := func() {
-		gobot.On(touchSensor.Event(gpio.Push), func(data interface{}) {
+		touchSensor.On(touchSensor.Event(gpio.ButtonPush), func(data interface{}) {
 			s.publish(eventTouched)
 		})
 
-		gobot.On(touchSensor.Event(gpio.Release), func(data interface{}) {
+		touchSensor.On(touchSensor.Event(gpio.ButtonRelease), func(data interface{}) {
 			s.publish(eventReleased)
 		})
 	}
@@ -92,7 +92,7 @@ func (s *SensorService) NewSoundSensor(pin string) {
 	s.publishSensorList(name)
 
 	work := func() {
-		gobot.On(soundSensor.Event(gpio.Data), func(data interface{}) {
+		soundSensor.On(soundSensor.Event(gpio.Data), func(data interface{}) {
 			logging.Log.Debugf("sound data %d", data)
 			if data.(int) > SOUND_THRESHOLD {
 				s.publish(eventSound)
