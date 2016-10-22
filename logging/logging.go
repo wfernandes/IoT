@@ -40,7 +40,7 @@ func (l Logger) Error(msg string, err error) {
 }
 
 func (l Logger) Errorf(msg string, values ...interface{}) {
-	l.log.Error(msg, values...)
+	l.log.Errorf(msg, values...)
 }
 
 func (l Logger) Info(msg string) {
@@ -48,7 +48,7 @@ func (l Logger) Info(msg string) {
 }
 
 func (l Logger) Infof(msg string, values ...interface{}) {
-	l.log.Info(msg, values...)
+	l.log.Infof(msg, values...)
 }
 
 func (l Logger) Debug(msg string) {
@@ -56,7 +56,7 @@ func (l Logger) Debug(msg string) {
 }
 
 func (l Logger) Debugf(msg string, values ...interface{}) {
-	l.log.Debug(msg, values...)
+	l.log.Debugf(msg, values...)
 }
 
 func (l Logger) Panic(msg string, err error) {
