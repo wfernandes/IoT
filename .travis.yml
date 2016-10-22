@@ -7,7 +7,7 @@ before_install:
 install:
 - go get -d -v -t ./...
 
-script: PATH=$GOPATH/bin:$PATH ./bin/test
+script: PATH=$GOPATH/bin:$PATH ./scripts/test
 
 go:
 - 1.7

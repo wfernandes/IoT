@@ -18,13 +18,13 @@ The sensor processor which would run on something like a Raspberry Pi or Intel E
 
 ### Tests
 ```
-./bin/test
+./scripts/test
 ```
 
 ### Building the Components
-Run `./bin/build_notification_processor` to build the notification processor.
+Run `./scripts/build_notification_processor` to build the notification processor.
 
-Run `./bin/build_sensor_processor` to build the sensor processor. Currently, the sensor processor builds on a linux/amd64 system. This allows the
+Run `./scripts/build_sensor_processor` to build the sensor processor. Currently, the sensor processor builds on a linux/amd64 system. This allows the
 sensor processor binary to work on the Intel Edison and the Raspberry Pi.
 
 ### Wiki
