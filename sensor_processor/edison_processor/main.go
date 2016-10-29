@@ -20,7 +20,6 @@ func main() {
 		panic(err)
 	}
 	logging.SetLogLevel(config.LogLevel)
-	gbot := gobot.NewGobot()
 
 	broker := broker.NewMQTTBroker("edison processor", config.BrokerUrl)
 	err = broker.Connect()
@@ -29,8 +28,8 @@ func main() {
 	}
 	logging.Log.Info("Successfully connected to broker")
 
+	gbot := gobot.NewGobot()
 	adapter := edison.NewEdisonAdaptor("edison")
-	//	adapter := testutils.NewMockAdapter("mockAdapter")
 	service := sensors.Initialize(gbot, adapter, broker)
 
 	for pin, stype := range config.Sensors {
