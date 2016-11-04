@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/wfernandes/IoT.svg?branch=master)](https://travis-ci.org/wfernandes/IoT)
+[![Go Report](https://goreportcard.com/badge/github.com/wfernandes/iot)](https://goreportcard.com/badge/github.com/wfernandes/iot)
 
 ## IoT Sensor Notification System
 
