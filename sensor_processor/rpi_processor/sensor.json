@@ -1,0 +1,7 @@
+{
+  "Sensors": {
+    "2": "touch"
+  },
+  "NotifierUrl": "10.0.0.4:8888",
+  "BrokerUrl": "tcp://test.mosquitto.org:1883"
+}
