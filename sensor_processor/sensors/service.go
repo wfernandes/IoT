@@ -81,6 +81,31 @@ func (s *SensorService) NewTouchSensor(pin string) {
 	logging.Log.Infof("Added sensor %s", name)
 }
 
+func (s *SensorService) NewLightSensor(pin string) {
+	lightSensor := gpio.NewGroveLightSensorDriver(s.adapter, "light", pin)
+	name := "lightsensor" + pin
+	eventLight := &event.Event{
+		Name: name,
+		Data: "light detected",
+	}
+	s.publishSensorList(name)
+
+	work := func() {
+		lightSensor.On(lightSensor.Event(gpio.Data), func(data interface{}) {
+			logging.Log.Debugf("light data %d", data)
+			s.publish(eventLight)
+		})
+	}
+
+	robot := gobot.NewRobot(name,
+		[]gobot.Connection{s.adapter},
+		[]gobot.Device{lightSensor},
+		work,
+	)
+	s.gobot.AddRobot(robot)
+	logging.Log.Infof("Added sensor %s", name)
+}
+
 func (s *SensorService) NewSoundSensor(pin string) {
 
 	soundSensor := gpio.NewGroveSoundSensorDriver(s.adapter, "sound", pin)

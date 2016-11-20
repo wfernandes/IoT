@@ -77,6 +77,32 @@ var _ = Describe("Sensors", func() {
 		})
 	})
 
+	Context("Light", func() {
+
+		It("adds light grove sensor robot to gobot", func() {
+			service.NewLightSensor("2")
+			Eventually(gbot.Robots().Len()).Should(Equal(1))
+			Expect(gbot.Robot("lightsensor2")).ToNot(BeNil())
+		})
+
+		It("publishes alert on light event", func() {
+			service.NewLightSensor("2")
+			evt := event.Event{
+				Name: "lightsensor2",
+				Data: "light detected",
+			}
+			evtLight, _ := json.Marshal(evt)
+
+			go gbot.Start()
+			broker.IsConnectedOutput.ret0 <- true
+			Eventually(broker.IsConnectedCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishCalled).Should(Receive(BeTrue()))
+			Eventually(broker.PublishInput.arg0).Should(Receive(Equal("/wff/v1/sp1/lightsensor2")))
+			Eventually(broker.PublishInput.arg1).Should(Receive(Equal(evtLight)))
+
+		})
+	})
+
 	Context("Sound", func() {
 		It("adds sound robot to gobot", func() {
 			service.NewSoundSensor("4")
